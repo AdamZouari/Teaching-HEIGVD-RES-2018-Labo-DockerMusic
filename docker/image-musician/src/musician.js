@@ -1,6 +1,6 @@
 var dgram = require('dgram');
 var uuid = require('uuid');
-
+var protocol = require('./protocol')
 var clientudp = dgram.createSocket('udp4');
 
 function Musician(instrument) {
@@ -16,13 +16,13 @@ function Musician(instrument) {
         var payload = JSON.stringify(data,null,'\t');
 
         message = new Buffer(payload);
-        clientudp.send(message, 0, message.length, 12345, '239.255.22.5', function (err, bytes) {
-            console.log("Sending payload: " + payload);
+        clientudp.send(message, 0, message.length, protocol.UDP_PORT, protocol.MULTICAST_ADRESS, function (err, bytes) {
+            console.log("Sending payload via port " + clientudp.address().port + "\n" + payload);
         });
     }
-    setInterval(this.update.bind(this), 1000);
+    setInterval(this.update.bind(this),protocol.TIME_PERIOD);
 }
 
 var instrument = process.argv[2];
 
-var m1 = new Musician(instrument);
+var musician = new Musician(instrument);
